@@ -10,7 +10,6 @@ import {
   Chip,
   Input,
   Label,
-  Select,
   TabBar,
   Textarea,
 } from "@/components/ui";
@@ -20,9 +19,11 @@ import type {
   FamilyRequest,
   Profile,
 } from "@/lib/types";
+import { FACILITY_TYPES, getFacilityType } from "@/lib/facilityTypes";
 
 type Screen =
   | "auth"
+  | "select-type"
   | "register"
   | "pending"
   | "home"
@@ -44,12 +45,12 @@ export default function CounselorApp() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authNotice, setAuthNotice] = useState<string | null>(null);
 
+  const [facilityTypeId, setFacilityTypeId] = useState("individual_counselor");
   const [regForm, setRegForm] = useState({
     name: "",
-    qualifications: "社会福祉士",
-    experience_years: "",
-    areas: "",
+    area: "",
     bio: "",
+    extra: {} as Record<string, string>,
   });
 
   const [openRequests, setOpenRequests] = useState<FamilyRequest[]>([]);
@@ -62,9 +63,9 @@ export default function CounselorApp() {
   >([]);
 
   const [editForm, setEditForm] = useState({
-    qualifications: "",
-    areas: "",
+    area: "",
     bio: "",
+    extra: {} as Record<string, string>,
   });
   const [savedNotice, setSavedNotice] = useState(false);
 
@@ -94,9 +95,9 @@ export default function CounselorApp() {
       if (cp) {
         setCounselorProfile(cp as CounselorProfile);
         setEditForm({
-          qualifications: cp.qualifications ?? "",
-          areas: (cp.areas ?? []).join("・"),
+          area: (cp.areas ?? []).join("・"),
           bio: cp.bio ?? "",
+          extra: (cp.extra_fields as Record<string, string>) ?? {},
         });
         if (cp.status === "approved") {
           setScreen("home");
@@ -105,7 +106,7 @@ export default function CounselorApp() {
           setScreen("pending");
         }
       } else {
-        setScreen("register");
+        setScreen("select-type");
       }
     }
     setLoading(false);
@@ -154,6 +155,8 @@ export default function CounselorApp() {
     if (!userId) return;
     if (!regForm.name.trim()) return;
 
+    const isIndividual = facilityTypeId === "individual_counselor";
+
     await supabase.from("profiles").upsert({
       id: userId,
       role: "counselor",
@@ -161,10 +164,14 @@ export default function CounselorApp() {
     });
     const { error } = await supabase.from("counselor_profiles").insert({
       id: userId,
-      qualifications: regForm.qualifications,
-      experience_years: Number(regForm.experience_years) || null,
-      areas: regForm.areas.split(/[・,、\s]+/).filter(Boolean),
+      facility_type: facilityTypeId,
+      qualifications: isIndividual ? regForm.extra.qualification ?? null : null,
+      experience_years: isIndividual
+        ? Number(regForm.extra.experienceYears) || null
+        : null,
+      areas: regForm.area.split(/[・,、\s]+/).filter(Boolean),
       bio: regForm.bio,
+      extra_fields: regForm.extra,
       status: "pending",
     });
     if (!error) {
@@ -226,12 +233,17 @@ export default function CounselorApp() {
 
   async function saveProfile() {
     if (!counselorProfile) return;
+    const isIndividual = counselorProfile.facility_type === "individual_counselor";
     const { error } = await supabase
       .from("counselor_profiles")
       .update({
-        qualifications: editForm.qualifications,
-        areas: editForm.areas.split(/[・,、\s]+/).filter(Boolean),
+        qualifications: isIndividual ? editForm.extra.qualification ?? null : null,
+        experience_years: isIndividual
+          ? Number(editForm.extra.experienceYears) || null
+          : null,
+        areas: editForm.area.split(/[・,、\s]+/).filter(Boolean),
         bio: editForm.bio,
+        extra_fields: editForm.extra,
       })
       .eq("id", counselorProfile.id);
     if (!error) {
@@ -305,58 +317,86 @@ export default function CounselorApp() {
             </div>
           )}
 
-          {screen === "register" && (
+          {screen === "select-type" && (
             <div className="flex-1 overflow-y-auto p-3.5 text-[13px]">
-              <AppHeader title="生活相談員 事前登録" />
+              <AppHeader title="登録する種別を選択" />
               <div className="p-3.5">
-                <Label>氏名</Label>
-                <Input
-                  value={regForm.name}
-                  onChange={(e) =>
-                    setRegForm({ ...regForm, name: e.target.value })
-                  }
-                  placeholder="山田 太郎"
-                />
-                <Label>保有資格</Label>
-                <Select
-                  value={regForm.qualifications}
-                  onChange={(e) =>
-                    setRegForm({ ...regForm, qualifications: e.target.value })
-                  }
-                >
-                  <option>社会福祉士</option>
-                  <option>介護支援専門員</option>
-                  <option>精神保健福祉士</option>
-                  <option>その他</option>
-                </Select>
-                <Label>実務経験年数</Label>
-                <Input
-                  value={regForm.experience_years}
-                  onChange={(e) =>
-                    setRegForm({ ...regForm, experience_years: e.target.value })
-                  }
-                  placeholder="例：8"
-                />
-                <Label>対応可能地域</Label>
-                <Input
-                  value={regForm.areas}
-                  onChange={(e) =>
-                    setRegForm({ ...regForm, areas: e.target.value })
-                  }
-                  placeholder="例：東京都世田谷区・目黒区"
-                />
-                <Label>自己紹介</Label>
-                <Textarea
-                  value={regForm.bio}
-                  onChange={(e) =>
-                    setRegForm({ ...regForm, bio: e.target.value })
-                  }
-                  placeholder="経歴や支援方針など"
-                />
-                <Button onClick={submitRegistration}>登録申請を送信する</Button>
+                <p className="text-[11px] text-gray mb-2">
+                  該当する種別を選択してください。種別に応じて次の入力項目が変わります。
+                </p>
+                {FACILITY_TYPES.map((t) => (
+                  <Card
+                    key={t.id}
+                    onClick={() => {
+                      setFacilityTypeId(t.id);
+                      setRegForm({ name: "", area: "", bio: "", extra: {} });
+                      setScreen("register");
+                    }}
+                  >
+                    <h4 className="font-bold text-[13.5px]">{t.label}</h4>
+                  </Card>
+                ))}
               </div>
             </div>
           )}
+
+          {screen === "register" &&
+            (() => {
+              const ft = getFacilityType(facilityTypeId);
+              return (
+                <div className="flex-1 overflow-y-auto p-3.5 text-[13px]">
+                  <AppHeader
+                    title="事前登録"
+                    onBack={() => setScreen("select-type")}
+                  />
+                  <div className="p-3.5">
+                    <Chip>{ft.label}</Chip>
+                    <Label>{ft.nameLabel}</Label>
+                    <Input
+                      value={regForm.name}
+                      onChange={(e) =>
+                        setRegForm({ ...regForm, name: e.target.value })
+                      }
+                      placeholder={ft.namePlaceholder}
+                    />
+                    {ft.extraFields.map((f) => (
+                      <div key={f.key}>
+                        <Label>{f.label}</Label>
+                        <Input
+                          value={regForm.extra[f.key] ?? ""}
+                          onChange={(e) =>
+                            setRegForm({
+                              ...regForm,
+                              extra: { ...regForm.extra, [f.key]: e.target.value },
+                            })
+                          }
+                          placeholder={f.placeholder}
+                        />
+                      </div>
+                    ))}
+                    <Label>{ft.areaLabel}</Label>
+                    <Input
+                      value={regForm.area}
+                      onChange={(e) =>
+                        setRegForm({ ...regForm, area: e.target.value })
+                      }
+                      placeholder={ft.areaPlaceholder}
+                    />
+                    <Label>{ft.bioLabel}</Label>
+                    <Textarea
+                      value={regForm.bio}
+                      onChange={(e) =>
+                        setRegForm({ ...regForm, bio: e.target.value })
+                      }
+                      placeholder={ft.bioPlaceholder}
+                    />
+                    <Button onClick={submitRegistration}>
+                      登録申請を送信する
+                    </Button>
+                  </div>
+                </div>
+              );
+            })()}
 
           {screen === "pending" && (
             <div className="flex-1 overflow-y-auto p-3.5">
@@ -484,27 +524,38 @@ export default function CounselorApp() {
             </div>
           )}
 
-          {screen === "profile" && (
+          {screen === "profile" && counselorProfile &&
+            (() => {
+              const ft = getFacilityType(counselorProfile.facility_type);
+              return (
             <div className="flex-1 flex flex-col overflow-hidden">
               <AppHeader title="プロフィール編集" />
               <div className="flex-1 overflow-y-auto p-3.5 text-[13px]">
-                <Label>氏名</Label>
+                <Chip>{ft.label}</Chip>
+                <Label>{ft.nameLabel}</Label>
                 <Input value={profile?.name ?? ""} disabled />
-                <Label>保有資格</Label>
+                {ft.extraFields.map((f) => (
+                  <div key={f.key}>
+                    <Label>{f.label}</Label>
+                    <Input
+                      value={editForm.extra[f.key] ?? ""}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          extra: { ...editForm.extra, [f.key]: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                ))}
+                <Label>{ft.areaLabel}</Label>
                 <Input
-                  value={editForm.qualifications}
+                  value={editForm.area}
                   onChange={(e) =>
-                    setEditForm({ ...editForm, qualifications: e.target.value })
+                    setEditForm({ ...editForm, area: e.target.value })
                   }
                 />
-                <Label>対応可能地域</Label>
-                <Input
-                  value={editForm.areas}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, areas: e.target.value })
-                  }
-                />
-                <Label>自己紹介</Label>
+                <Label>{ft.bioLabel}</Label>
                 <Textarea
                   value={editForm.bio}
                   onChange={(e) =>
@@ -535,7 +586,8 @@ export default function CounselorApp() {
                 }}
               />
             </div>
-          )}
+              );
+            })()}
         </div>
       </div>
     </div>

@@ -21,6 +21,7 @@ import type {
   Message,
   Profile,
 } from "@/lib/types";
+import { getFacilityType } from "@/lib/facilityTypes";
 
 type Screen =
   | "login"
@@ -488,8 +489,13 @@ export default function FamilyApp() {
                       </span>
                     </h4>
                     <p className="text-xs text-neutral-500">
-                      {a.counselor?.qualifications} ／ 経験
-                      {a.counselor?.experience_years}年
+                      {a.counselor
+                        ? getFacilityType(a.counselor.facility_type).label
+                        : ""}
+                      {a.counselor?.qualifications &&
+                        ` ／ 資格：${a.counselor.qualifications}`}
+                      {a.counselor?.experience_years &&
+                        ` ／ 経験${a.counselor.experience_years}年`}
                     </p>
                     <p className="text-xs text-neutral-500">「{a.message}」</p>
                   </Card>
@@ -512,11 +518,34 @@ export default function FamilyApp() {
                   </span>{" "}
                   （{selectedApplicant.counselor?.rating_count ?? 0}件）
                 </h3>
-                <p>資格：{selectedApplicant.counselor?.qualifications}</p>
                 <p>
-                  経験：{selectedApplicant.counselor?.experience_years}年／対応地域：
-                  {selectedApplicant.counselor?.areas?.join("・")}
+                  種別：
+                  {selectedApplicant.counselor
+                    ? getFacilityType(selectedApplicant.counselor.facility_type)
+                        .label
+                    : ""}
                 </p>
+                {selectedApplicant.counselor?.qualifications && (
+                  <p>資格：{selectedApplicant.counselor.qualifications}</p>
+                )}
+                {selectedApplicant.counselor?.experience_years && (
+                  <p>経験：{selectedApplicant.counselor.experience_years}年</p>
+                )}
+                <p>対応地域：{selectedApplicant.counselor?.areas?.join("・")}</p>
+                {selectedApplicant.counselor &&
+                  Object.entries(selectedApplicant.counselor.extra_fields ?? {}).map(
+                    ([key, value]) => {
+                      const field = getFacilityType(
+                        selectedApplicant.counselor!.facility_type
+                      ).extraFields.find((f) => f.key === key);
+                      if (!field || !value) return null;
+                      return (
+                        <p key={key}>
+                          {field.label}：{value}
+                        </p>
+                      );
+                    }
+                  )}
                 <p className="mt-2.5">
                   自己PR：{selectedApplicant.counselor?.bio}
                 </p>

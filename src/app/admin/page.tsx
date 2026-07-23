@@ -10,6 +10,7 @@ import type {
   Match,
   Profile,
 } from "@/lib/types";
+import { getFacilityType } from "@/lib/facilityTypes";
 
 type Nav = "approvals" | "fee" | "matches";
 
@@ -247,7 +248,7 @@ export default function AdminApp() {
                 <table className="w-full text-[12.5px] border-collapse">
                   <thead>
                     <tr>
-                      {["氏名", "資格", "地域", "ステータス", "操作"].map((h) => (
+                      {["氏名／名称", "種別", "地域", "ステータス", "操作"].map((h) => (
                         <th
                           key={h}
                           className="text-left p-2 border-b border-neutral-200 bg-neutral-50 text-neutral-500 font-semibold"
@@ -264,7 +265,7 @@ export default function AdminApp() {
                           {c.profile?.name}
                         </td>
                         <td className="p-2 border-b border-neutral-100">
-                          {c.qualifications}
+                          {getFacilityType(c.facility_type).label}
                         </td>
                         <td className="p-2 border-b border-neutral-100">
                           {c.areas?.join("・")}

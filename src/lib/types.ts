@@ -21,6 +21,8 @@ export type CounselorProfile = {
   status: CounselorStatus;
   rating_avg: number;
   rating_count: number;
+  facility_type: string;
+  extra_fields: Record<string, string>;
   created_at: string;
   profiles?: Profile;
 };
