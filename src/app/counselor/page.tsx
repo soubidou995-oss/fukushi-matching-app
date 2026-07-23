@@ -108,6 +108,8 @@ export default function CounselorApp() {
       } else {
         setScreen("select-type");
       }
+    } else {
+      setScreen("select-type");
     }
     setLoading(false);
   }
