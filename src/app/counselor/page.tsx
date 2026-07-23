@@ -5,9 +5,11 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import {
   AppHeader,
+  AvatarUploader,
   Button,
   Card,
   Chip,
+  GalleryUploader,
   Input,
   Label,
   TabBar,
@@ -33,6 +35,7 @@ type Screen =
 
 export default function CounselorApp() {
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [counselorProfile, setCounselorProfile] =
     useState<CounselorProfile | null>(null);
@@ -51,6 +54,8 @@ export default function CounselorApp() {
     area: "",
     bio: "",
     extra: {} as Record<string, string>,
+    avatarUrl: null as string | null,
+    photos: [] as string[],
   });
 
   const [openRequests, setOpenRequests] = useState<FamilyRequest[]>([]);
@@ -66,12 +71,15 @@ export default function CounselorApp() {
     area: "",
     bio: "",
     extra: {} as Record<string, string>,
+    avatarUrl: null as string | null,
+    photos: [] as string[],
   });
   const [savedNotice, setSavedNotice] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) {
+        setUserId(data.session.user.id);
         loadAll(data.session.user.id);
       } else {
         setLoading(false);
@@ -98,6 +106,8 @@ export default function CounselorApp() {
           area: (cp.areas ?? []).join("・"),
           bio: cp.bio ?? "",
           extra: (cp.extra_fields as Record<string, string>) ?? {},
+          avatarUrl: cp.avatar_url ?? null,
+          photos: cp.photo_urls ?? [],
         });
         if (cp.status === "approved") {
           setScreen("home");
@@ -124,7 +134,10 @@ export default function CounselorApp() {
       setAuthError(error.message);
       return;
     }
-    if (data.user) loadAll(data.user.id);
+    if (data.user) {
+      setUserId(data.user.id);
+      loadAll(data.user.id);
+    }
   }
 
   async function handleSignup() {
@@ -141,6 +154,7 @@ export default function CounselorApp() {
       );
       return;
     }
+    setUserId(data.user!.id);
     loadAll(data.user!.id);
   }
 
@@ -174,6 +188,8 @@ export default function CounselorApp() {
       areas: regForm.area.split(/[・,、\s]+/).filter(Boolean),
       bio: regForm.bio,
       extra_fields: regForm.extra,
+      avatar_url: regForm.avatarUrl,
+      photo_urls: regForm.photos,
       status: "pending",
     });
     if (!error) {
@@ -246,6 +262,8 @@ export default function CounselorApp() {
         areas: editForm.area.split(/[・,、\s]+/).filter(Boolean),
         bio: editForm.bio,
         extra_fields: editForm.extra,
+        avatar_url: editForm.avatarUrl,
+        photo_urls: editForm.photos,
       })
       .eq("id", counselorProfile.id);
     if (!error) {
@@ -331,7 +349,14 @@ export default function CounselorApp() {
                     key={t.id}
                     onClick={() => {
                       setFacilityTypeId(t.id);
-                      setRegForm({ name: "", area: "", bio: "", extra: {} });
+                      setRegForm({
+                        name: "",
+                        area: "",
+                        bio: "",
+                        extra: {},
+                        avatarUrl: null,
+                        photos: [],
+                      });
                       setScreen("register");
                     }}
                   >
@@ -361,6 +386,15 @@ export default function CounselorApp() {
                       }
                       placeholder={ft.namePlaceholder}
                     />
+                    {userId && (
+                      <AvatarUploader
+                        userId={userId}
+                        value={regForm.avatarUrl}
+                        onChange={(url) =>
+                          setRegForm({ ...regForm, avatarUrl: url })
+                        }
+                      />
+                    )}
                     {ft.extraFields.map((f) => (
                       <div key={f.key}>
                         <Label>{f.label}</Label>
@@ -392,6 +426,18 @@ export default function CounselorApp() {
                       }
                       placeholder={ft.bioPlaceholder}
                     />
+                    {userId && (
+                      <GalleryUploader
+                        userId={userId}
+                        value={regForm.photos}
+                        onChange={(photos) => setRegForm({ ...regForm, photos })}
+                        label={
+                          facilityTypeId === "individual_counselor"
+                            ? "資料・写真（任意、複数可）"
+                            : "施設の写真（外観・内観など、複数可）"
+                        }
+                      />
+                    )}
                     <Button onClick={submitRegistration}>
                       登録申請を送信する
                     </Button>
@@ -536,6 +582,11 @@ export default function CounselorApp() {
                 <Chip>{ft.label}</Chip>
                 <Label>{ft.nameLabel}</Label>
                 <Input value={profile?.name ?? ""} disabled />
+                <AvatarUploader
+                  userId={counselorProfile.id}
+                  value={editForm.avatarUrl}
+                  onChange={(url) => setEditForm({ ...editForm, avatarUrl: url })}
+                />
                 {ft.extraFields.map((f) => (
                   <div key={f.key}>
                     <Label>{f.label}</Label>
@@ -562,6 +613,16 @@ export default function CounselorApp() {
                   value={editForm.bio}
                   onChange={(e) =>
                     setEditForm({ ...editForm, bio: e.target.value })
+                  }
+                />
+                <GalleryUploader
+                  userId={counselorProfile.id}
+                  value={editForm.photos}
+                  onChange={(photos) => setEditForm({ ...editForm, photos })}
+                  label={
+                    ft.id === "individual_counselor"
+                      ? "資料・写真（任意、複数可）"
+                      : "施設の写真（外観・内観など、複数可）"
                   }
                 />
                 <Button onClick={saveProfile}>保存する</Button>

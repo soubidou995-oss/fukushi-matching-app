@@ -23,6 +23,8 @@ export type CounselorProfile = {
   rating_count: number;
   facility_type: string;
   extra_fields: Record<string, string>;
+  avatar_url: string | null;
+  photo_urls: string[];
   created_at: string;
   profiles?: Profile;
 };

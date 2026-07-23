@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
+import { uploadFacilityPhoto } from "@/lib/storage";
 
 export function Card({
   children,
@@ -179,6 +180,124 @@ export function PhoneFrame({ label, children }: { label: string; children: React
       <div className="flex-1 bg-card rounded-[26px] overflow-hidden flex flex-col relative">
         {children}
       </div>
+    </div>
+  );
+}
+
+export function AvatarUploader({
+  userId,
+  value,
+  onChange,
+  label = "顔写真・代表写真",
+}: {
+  userId: string;
+  value: string | null;
+  onChange: (url: string) => void;
+  label?: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadFacilityPhoto(userId, file, "avatar");
+      onChange(url);
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  return (
+    <div className="mt-2.5">
+      <Label>{label}</Label>
+      <div className="flex items-center gap-3">
+        <div className="w-16 h-16 rounded-full bg-neutral-100 overflow-hidden flex items-center justify-center text-xl text-neutral-300 shrink-0">
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" className="w-full h-full object-cover" />
+          ) : (
+            "👤"
+          )}
+        </div>
+        <label className="text-xs text-main underline cursor-pointer">
+          {uploading ? "アップロード中…" : "画像を選択"}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFile}
+            disabled={uploading}
+          />
+        </label>
+      </div>
+    </div>
+  );
+}
+
+export function GalleryUploader({
+  userId,
+  value,
+  onChange,
+  label = "施設・職員の写真（複数可）",
+}: {
+  userId: string;
+  value: string[];
+  onChange: (urls: string[]) => void;
+  label?: string;
+}) {
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+    setUploading(true);
+    try {
+      const urls = await Promise.all(
+        files.map((f) => uploadFacilityPhoto(userId, f, "gallery"))
+      );
+      onChange([...value, ...urls]);
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  function remove(url: string) {
+    onChange(value.filter((u) => u !== url));
+  }
+
+  return (
+    <div className="mt-2.5">
+      <Label>{label}</Label>
+      <div className="flex flex-wrap gap-2 mb-2">
+        {value.map((url) => (
+          <div key={url} className="relative w-16 h-16 rounded-lg overflow-hidden group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={url} alt="" className="w-full h-full object-cover" />
+            <button
+              type="button"
+              onClick={() => remove(url)}
+              className="absolute top-0 right-0 bg-black/60 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-bl"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+      <label className="text-xs text-main underline cursor-pointer">
+        {uploading ? "アップロード中…" : "写真を追加"}
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          className="hidden"
+          onChange={handleFiles}
+          disabled={uploading}
+        />
+      </label>
     </div>
   );
 }

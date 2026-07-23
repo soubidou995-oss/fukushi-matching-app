@@ -482,12 +482,22 @@ export default function FamilyApp() {
                 )}
                 {applicants.map((a) => (
                   <Card key={a.id} onClick={() => openApplicantProfile(a)}>
-                    <h4 className="text-[13.5px] font-bold mb-1">
-                      {a.counselor?.profile?.name ?? "相談員"}{" "}
-                      <span className="text-[13px] text-[#e0a72e]">
-                        ★{a.counselor?.rating_avg ?? "-"}
-                      </span>
-                    </h4>
+                    <div className="flex items-center gap-2 mb-1">
+                      {a.counselor?.avatar_url && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={a.counselor.avatar_url}
+                          alt=""
+                          className="w-8 h-8 rounded-full object-cover shrink-0"
+                        />
+                      )}
+                      <h4 className="text-[13.5px] font-bold">
+                        {a.counselor?.profile?.name ?? "相談員"}{" "}
+                        <span className="text-[13px] text-[#e0a72e]">
+                          ★{a.counselor?.rating_avg ?? "-"}
+                        </span>
+                      </h4>
+                    </div>
                     <p className="text-xs text-neutral-500">
                       {a.counselor
                         ? getFacilityType(a.counselor.facility_type).label
@@ -511,6 +521,14 @@ export default function FamilyApp() {
                 onBack={() => setScreen("request-detail")}
               />
               <div className="flex-1 overflow-y-auto p-3.5 text-[13px]">
+                {selectedApplicant.counselor?.avatar_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={selectedApplicant.counselor.avatar_url}
+                    alt=""
+                    className="w-20 h-20 rounded-full object-cover mb-2"
+                  />
+                )}
                 <h3 className="font-bold text-base mb-1">
                   {selectedApplicant.counselor?.profile?.name}{" "}
                   <span className="text-[#e0a72e] text-sm">
@@ -549,6 +567,20 @@ export default function FamilyApp() {
                 <p className="mt-2.5">
                   自己PR：{selectedApplicant.counselor?.bio}
                 </p>
+                {selectedApplicant.counselor?.photo_urls &&
+                  selectedApplicant.counselor.photo_urls.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2.5">
+                      {selectedApplicant.counselor.photo_urls.map((url) => (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          key={url}
+                          src={url}
+                          alt=""
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                      ))}
+                    </div>
+                  )}
                 <p className="mt-2.5">
                   応募メッセージ：「{selectedApplicant.message}」
                 </p>
