@@ -76,6 +76,12 @@ export default function Home() {
         <p className="mt-16 text-center text-[11px] text-neutral-400">
           ご家族の利用は無料です。生活相談員・登録事業者には月額利用料金をいただくモデルで運営しています。
         </p>
+        <Link
+          href="/privacy"
+          className="mt-3 text-[11px] text-neutral-400 underline hover:text-main"
+        >
+          プライバシーポリシー
+        </Link>
       </div>
     </div>
   );
