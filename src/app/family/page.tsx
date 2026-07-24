@@ -95,6 +95,22 @@ export default function FamilyApp() {
       setProfile(data as Profile);
       setScreen("home");
       loadRequests(userId);
+      setLoading(false);
+      return;
+    }
+
+    // 認証アカウントはあるがprofilesが未作成のケース（過去の失敗した登録など）を復旧する
+    const { data: created, error } = await supabase
+      .from("profiles")
+      .insert({ id: userId, role: "family", name: name || "ご家族" })
+      .select()
+      .single();
+    if (created) {
+      setProfile(created as Profile);
+      setScreen("home");
+      loadRequests(userId);
+    } else if (error) {
+      setAuthError(error.message);
     }
     setLoading(false);
   }
