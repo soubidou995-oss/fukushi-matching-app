@@ -65,38 +65,9 @@ const apps = [
   },
 ];
 
-const LEAF_PATTERN =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%232e5e4e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M28 24c14 6 14 26 0 32-14-6-14-26 0-32Z'/%3E%3Cpath d='M28 24v32'/%3E%3C/g%3E%3Cg fill='none' stroke='%23d98c3d' stroke-width='2' stroke-linecap='round' transform='rotate(35 122 96)'%3E%3Cpath d='M122 80c12 5 12 22 0 27-12-5-12-22 0-27Z'/%3E%3Cpath d='M122 80v27'/%3E%3C/g%3E%3Cg fill='none' stroke='%232e5e4e' stroke-width='2' stroke-linecap='round' transform='rotate(-20 70 130)'%3E%3Cpath d='M70 116c11 4.5 11 20 0 24.5-11-4.5-11-20 0-24.5Z'/%3E%3Cpath d='M70 116v24.5'/%3E%3C/g%3E%3C/svg%3E";
-
-const GRAIN =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
-
 export default function Home() {
   return (
-    <div className="relative flex-1 overflow-hidden bg-[#f7f3ea]">
-      {/* organic blurred color blobs */}
-      <div className="pointer-events-none absolute -left-24 -top-32 h-[26rem] w-[26rem] animate-blob-a rounded-[60%_40%_30%_70%/60%_30%_70%_40%] bg-main/25 blur-3xl" />
-      <div className="pointer-events-none absolute -right-28 top-[-4rem] h-[24rem] w-[24rem] animate-blob-b rounded-[40%_60%_70%_30%/50%_60%_40%_50%] bg-accent/25 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-10rem] left-1/3 h-[22rem] w-[22rem] animate-blob-a rounded-[50%_50%_40%_60%/40%_50%_60%_50%] bg-main/15 blur-3xl" />
-
-      {/* warm base gradient wash */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.5),transparent_60%)]" />
-
-      {/* nature texture */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage: `url("${LEAF_PATTERN}")`,
-          backgroundSize: "160px 160px",
-        }}
-      />
-
-      {/* fine grain for a designed, tactile feel */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-[0.04] mix-blend-multiply"
-        style={{ backgroundImage: `url("${GRAIN}")` }}
-      />
-
+    <div className="relative flex-1 overflow-hidden bg-gradient-to-b from-[#eef4f0] via-[#f7f3ea] to-[#f7ede1]">
       <div className="relative flex flex-col items-center px-4 py-20 sm:py-28">
         <span className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-main to-[#1f3d33] shadow-[0_10px_30px_rgba(46,94,78,0.25)]">
           <span className="flex -space-x-1.5">

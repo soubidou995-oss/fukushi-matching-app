@@ -29,21 +29,3 @@ body {
   color: var(--foreground);
   font-family: "Hiragino Sans", "Yu Gothic", var(--font-geist-sans), sans-serif;
 }
-
-@keyframes blob-float-a {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(2%, 4%) scale(1.06); }
-}
-
-@keyframes blob-float-b {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-3%, -3%) scale(1.08); }
-}
-
-.animate-blob-a {
-  animation: blob-float-a 14s ease-in-out infinite;
-}
-
-.animate-blob-b {
-  animation: blob-float-b 18s ease-in-out infinite;
-}
