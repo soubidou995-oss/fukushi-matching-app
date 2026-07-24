@@ -74,7 +74,7 @@ export default function Home() {
       {/* warm organic background */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(46,94,78,0.14),transparent_45%),radial-gradient(circle_at_90%_15%,rgba(217,140,61,0.18),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(46,94,78,0.10),transparent_55%)]" />
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.35]"
+        className="pointer-events-none absolute inset-0 opacity-[0.10]"
         style={{
           backgroundImage: `url("${LEAF_PATTERN}")`,
           backgroundSize: "160px 160px",
@@ -95,7 +95,7 @@ export default function Home() {
         <h1 className="mt-3 text-center text-3xl font-bold tracking-tight text-main sm:text-4xl">
           全国福祉マッチングアプリ
         </h1>
-        <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-neutral-500">
+        <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-neutral-600">
           ご家族・生活相談員／施設・運営をつなぐ福祉マッチングサービス。
           <br />
           利用するアプリを選択してください。
@@ -108,7 +108,7 @@ export default function Home() {
               <Link
                 key={app.href}
                 href={app.href}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-main/10 bg-white/70 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:bg-white hover:shadow-xl hover:shadow-main/10"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-main/10 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:shadow-xl hover:shadow-main/10"
               >
                 <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-accent/10 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0" />
 
@@ -116,7 +116,7 @@ export default function Home() {
                   <Icon />
                 </span>
                 <h2 className="font-bold text-neutral-800">{app.title}</h2>
-                <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
+                <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">
                   {app.desc}
                 </p>
                 <span className="mt-4 inline-flex w-fit items-center rounded-full bg-main-light px-2.5 py-1 text-[11px] font-medium text-main">
