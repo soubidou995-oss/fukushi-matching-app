@@ -92,6 +92,22 @@ export const FACILITY_TYPES: FacilityType[] = [
     ],
   },
   {
+    id: "seikatsu_kaigo",
+    label: "生活介護",
+    nameLabel: "事業所名",
+    namePlaceholder: "例：〇〇生活介護事業所",
+    areaLabel: "所在地",
+    areaPlaceholder: "例：東京都〇〇区1-2-3",
+    bioLabel: "施設の特徴・自己紹介",
+    bioPlaceholder: "活動内容や施設の特色など",
+    extraFields: [
+      { key: "capacity", label: "定員", placeholder: "例：20名" },
+      { key: "targetDisability", label: "対応障害区分", placeholder: "例：区分3以上" },
+      { key: "transport", label: "送迎の有無", placeholder: "例：あり（片道30分圏内）" },
+      { key: "hours", label: "営業時間", placeholder: "例：平日9:00〜16:00" },
+    ],
+  },
+  {
     id: "shurou_a",
     label: "就労継続支援A型",
     nameLabel: "事業所名",
