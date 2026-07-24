@@ -65,22 +65,24 @@ const apps = [
   },
 ];
 
+const LEAF_PATTERN =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%232e5e4e' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M28 24c14 6 14 26 0 32-14-6-14-26 0-32Z'/%3E%3Cpath d='M28 24v32'/%3E%3C/g%3E%3Cg fill='none' stroke='%23d98c3d' stroke-width='2' stroke-linecap='round' transform='rotate(35 122 96)'%3E%3Cpath d='M122 80c12 5 12 22 0 27-12-5-12-22 0-27Z'/%3E%3Cpath d='M122 80v27'/%3E%3C/g%3E%3Cg fill='none' stroke='%232e5e4e' stroke-width='2' stroke-linecap='round' transform='rotate(-20 70 130)'%3E%3Cpath d='M70 116c11 4.5 11 20 0 24.5-11-4.5-11-20 0-24.5Z'/%3E%3Cpath d='M70 116v24.5'/%3E%3C/g%3E%3C/svg%3E";
+
 export default function Home() {
   return (
-    <div className="relative flex-1 overflow-hidden bg-[#0f1d18]">
-      {/* background layers */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_-10%,rgba(46,94,78,0.55),transparent_50%),radial-gradient(circle_at_85%_10%,rgba(217,140,61,0.28),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(46,94,78,0.35),transparent_55%)]" />
+    <div className="relative flex-1 overflow-hidden bg-[#f7f3ea]">
+      {/* warm organic background */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(46,94,78,0.14),transparent_45%),radial-gradient(circle_at_90%_15%,rgba(217,140,61,0.18),transparent_45%),radial-gradient(circle_at_50%_100%,rgba(46,94,78,0.10),transparent_55%)]" />
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.06]"
+        className="pointer-events-none absolute inset-0 opacity-[0.35]"
         style={{
-          backgroundImage:
-            "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-          backgroundSize: "42px 42px",
+          backgroundImage: `url("${LEAF_PATTERN}")`,
+          backgroundSize: "160px 160px",
         }}
       />
 
       <div className="relative flex flex-col items-center px-4 py-20 sm:py-28">
-        <span className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-main to-[#1f3d33] text-2xl shadow-[0_8px_30px_rgba(217,140,61,0.25)] ring-1 ring-white/10">
+        <span className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-main to-[#1f3d33] shadow-[0_10px_30px_rgba(46,94,78,0.25)]">
           <span className="flex -space-x-1.5">
             <span className="h-4 w-4 rounded-full bg-white/90" />
             <span className="h-4 w-4 rounded-full bg-accent" />
@@ -90,10 +92,10 @@ export default function Home() {
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-accent">
           Welfare Matching Platform
         </p>
-        <h1 className="mt-3 text-center text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        <h1 className="mt-3 text-center text-3xl font-bold tracking-tight text-main sm:text-4xl">
           全国福祉マッチングアプリ
         </h1>
-        <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-white/60">
+        <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-neutral-500">
           ご家族・生活相談員／施設・運営をつなぐ福祉マッチングサービス。
           <br />
           利用するアプリを選択してください。
@@ -106,18 +108,18 @@ export default function Home() {
               <Link
                 key={app.href}
                 href={app.href}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:bg-white/[0.07] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-main/10 bg-white/70 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-accent/40 hover:bg-white hover:shadow-xl hover:shadow-main/10"
               >
                 <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-accent/10 blur-2xl transition-opacity duration-300 group-hover:opacity-100 opacity-0" />
 
-                <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-white transition-colors duration-300 group-hover:bg-accent group-hover:text-white">
+                <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-main-light text-main transition-colors duration-300 group-hover:bg-accent group-hover:text-white">
                   <Icon />
                 </span>
-                <h2 className="font-bold text-white">{app.title}</h2>
-                <p className="mt-1.5 text-xs leading-relaxed text-white/50">
+                <h2 className="font-bold text-neutral-800">{app.title}</h2>
+                <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
                   {app.desc}
                 </p>
-                <span className="mt-4 inline-flex w-fit items-center rounded-full bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white/70">
+                <span className="mt-4 inline-flex w-fit items-center rounded-full bg-main-light px-2.5 py-1 text-[11px] font-medium text-main">
                   {app.note}
                 </span>
                 <span className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-accent opacity-0 transition-all duration-300 group-hover:translate-x-0.5 group-hover:opacity-100">
@@ -139,12 +141,12 @@ export default function Home() {
           })}
         </div>
 
-        <p className="mt-16 text-center text-[11px] text-white/40">
+        <p className="mt-16 text-center text-[11px] text-neutral-400">
           ご家族の利用は無料です。生活相談員・登録事業者には月額利用料金をいただくモデルで運営しています。
         </p>
         <Link
           href="/privacy"
-          className="mt-3 text-[11px] text-white/40 underline hover:text-accent"
+          className="mt-3 text-[11px] text-neutral-400 underline hover:text-main"
         >
           プライバシーポリシー
         </Link>
