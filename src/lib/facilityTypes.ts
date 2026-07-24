@@ -4,9 +4,12 @@ export type ExtraField = {
   placeholder: string;
 };
 
+export type FacilityCategory = "elderly" | "disability" | "other";
+
 export type FacilityType = {
   id: string;
   label: string;
+  category: FacilityCategory;
   nameLabel: string;
   namePlaceholder: string;
   areaLabel: string;
@@ -20,6 +23,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "individual_counselor",
     label: "生活相談員（個人）",
+    category: "elderly",
     nameLabel: "氏名",
     namePlaceholder: "山田 太郎",
     areaLabel: "対応可能地域",
@@ -34,6 +38,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "tokuyou",
     label: "特別養護老人ホーム",
+    category: "elderly",
     nameLabel: "施設名",
     namePlaceholder: "例：〇〇特別養護老人ホーム",
     areaLabel: "所在地",
@@ -49,6 +54,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "tsuusho_kaigo",
     label: "通所介護（デイサービス）",
+    category: "elderly",
     nameLabel: "事業所名",
     namePlaceholder: "例：〇〇デイサービスセンター",
     areaLabel: "所在地",
@@ -63,8 +69,24 @@ export const FACILITY_TYPES: FacilityType[] = [
     ],
   },
   {
+    id: "houmon_kaigo",
+    label: "訪問介護",
+    category: "elderly",
+    nameLabel: "事業所名",
+    namePlaceholder: "例：〇〇訪問介護事業所",
+    areaLabel: "対応エリア",
+    areaPlaceholder: "例：東京都23区全域",
+    bioLabel: "サービスの特徴・自己紹介",
+    bioPlaceholder: "サービスの方針や特色など",
+    extraFields: [
+      { key: "serviceHours", label: "サービス提供時間", placeholder: "例：24時間対応可" },
+      { key: "staffQualifications", label: "保有資格スタッフ数", placeholder: "例：介護福祉士3名" },
+    ],
+  },
+  {
     id: "jido_yougo",
     label: "児童養護施設",
+    category: "disability",
     nameLabel: "施設名",
     namePlaceholder: "例：〇〇児童養護施設",
     areaLabel: "所在地",
@@ -79,6 +101,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "houkago_day",
     label: "放課後等デイサービス",
+    category: "disability",
     nameLabel: "事業所名",
     namePlaceholder: "例：〇〇放課後等デイサービス",
     areaLabel: "所在地",
@@ -94,6 +117,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "seikatsu_kaigo",
     label: "生活介護",
+    category: "disability",
     nameLabel: "事業所名",
     namePlaceholder: "例：〇〇生活介護事業所",
     areaLabel: "所在地",
@@ -110,6 +134,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "shurou_a",
     label: "就労継続支援A型",
+    category: "disability",
     nameLabel: "事業所名",
     namePlaceholder: "例：〇〇就労継続支援A型事業所",
     areaLabel: "所在地",
@@ -124,6 +149,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "shurou_b",
     label: "就労継続支援B型",
+    category: "disability",
     nameLabel: "事業所名",
     namePlaceholder: "例：〇〇就労継続支援B型事業所",
     areaLabel: "所在地",
@@ -136,22 +162,9 @@ export const FACILITY_TYPES: FacilityType[] = [
     ],
   },
   {
-    id: "houmon_kaigo",
-    label: "訪問介護",
-    nameLabel: "事業所名",
-    namePlaceholder: "例：〇〇訪問介護事業所",
-    areaLabel: "対応エリア",
-    areaPlaceholder: "例：東京都23区全域",
-    bioLabel: "サービスの特徴・自己紹介",
-    bioPlaceholder: "サービスの方針や特色など",
-    extraFields: [
-      { key: "serviceHours", label: "サービス提供時間", placeholder: "例：24時間対応可" },
-      { key: "staffQualifications", label: "保有資格スタッフ数", placeholder: "例：介護福祉士3名" },
-    ],
-  },
-  {
     id: "gh",
     label: "障害者グループホーム",
+    category: "disability",
     nameLabel: "施設名",
     namePlaceholder: "例：〇〇グループホーム",
     areaLabel: "所在地",
@@ -166,6 +179,7 @@ export const FACILITY_TYPES: FacilityType[] = [
   {
     id: "other",
     label: "その他",
+    category: "other",
     nameLabel: "名称",
     namePlaceholder: "施設・事業所名など",
     areaLabel: "所在地・対応エリア",
@@ -178,4 +192,12 @@ export const FACILITY_TYPES: FacilityType[] = [
 
 export function getFacilityType(id: string): FacilityType {
   return FACILITY_TYPES.find((t) => t.id === id) ?? FACILITY_TYPES[FACILITY_TYPES.length - 1];
+}
+
+export function getFacilityTypesByCategory(
+  category: "elderly" | "disability"
+): FacilityType[] {
+  return FACILITY_TYPES.filter(
+    (t) => t.category === category || t.category === "other"
+  );
 }

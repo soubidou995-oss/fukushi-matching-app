@@ -33,6 +33,14 @@ function UsersIcon() {
   );
 }
 
+function HeartIcon() {
+  return (
+    <IconWrap>
+      <path d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+    </IconWrap>
+  );
+}
+
 function ShieldIcon() {
   return (
     <IconWrap>
@@ -50,10 +58,17 @@ const apps = [
     icon: HomeIcon,
   },
   {
-    href: "/counselor",
-    title: "生活相談員・施設アプリ",
-    desc: "案件を探して応募・対応する",
-    note: "生活相談員／各種施設・事業所向け",
+    href: "/counselor?category=elderly",
+    title: "高齢者サービス",
+    desc: "案件を探して応募・対応する（生活相談員・特養・デイサービス等）",
+    note: "高齢者福祉の事業者・相談員向け",
+    icon: HeartIcon,
+  },
+  {
+    href: "/counselor?category=disability",
+    title: "障害サービス",
+    desc: "案件を探して応募・対応する（生活介護・就労継続支援等）",
+    note: "障害福祉の事業者向け",
     icon: UsersIcon,
   },
   {
@@ -88,7 +103,7 @@ export default function Home() {
           利用するアプリを選択してください。
         </p>
 
-        <div className="mt-12 grid w-full max-w-4xl gap-5 sm:grid-cols-3">
+        <div className="mt-12 grid w-full max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {apps.map((app) => {
             const Icon = app.icon;
             return (

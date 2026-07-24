@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import {
   AppHeader,
@@ -21,7 +22,7 @@ import type {
   FamilyRequest,
   Profile,
 } from "@/lib/types";
-import { FACILITY_TYPES, getFacilityType } from "@/lib/facilityTypes";
+import { getFacilityType, getFacilityTypesByCategory } from "@/lib/facilityTypes";
 
 type Screen =
   | "auth"
@@ -33,7 +34,20 @@ type Screen =
   | "applications"
   | "profile";
 
-export default function CounselorApp() {
+export default function CounselorAppPage() {
+  return (
+    <Suspense>
+      <CounselorApp />
+    </Suspense>
+  );
+}
+
+function CounselorApp() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category") === "disability" ? "disability" : "elderly";
+  const categoryLabel = category === "disability" ? "障害サービス" : "高齢者サービス";
+  const facilityTypeOptions = getFacilityTypesByCategory(category);
+
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -291,12 +305,12 @@ export default function CounselorApp() {
 
       <div className="w-[340px] h-[680px] bg-black rounded-[36px] p-2.5 shadow-xl flex flex-col">
         <div className="h-[18px] flex items-center justify-center text-white text-[10px]">
-          生活相談員アプリ
+          {categoryLabel}アプリ
         </div>
         <div className="flex-1 bg-white rounded-[26px] overflow-hidden flex flex-col relative">
           {screen === "auth" && (
             <div className="flex-1 overflow-y-auto p-3.5 text-[13px]">
-              <AppHeader title="生活相談員 ログイン" />
+              <AppHeader title={`${categoryLabel} ログイン`} />
               <div className="p-3.5">
                 <Label>メールアドレス</Label>
                 <Input
@@ -339,12 +353,12 @@ export default function CounselorApp() {
 
           {screen === "select-type" && (
             <div className="flex-1 overflow-y-auto p-3.5 text-[13px]">
-              <AppHeader title="登録する種別を選択" />
+              <AppHeader title={`登録する種別を選択（${categoryLabel}）`} />
               <div className="p-3.5">
                 <p className="text-[11px] text-gray mb-2">
                   該当する種別を選択してください。種別に応じて次の入力項目が変わります。
                 </p>
-                {FACILITY_TYPES.map((t) => (
+                {facilityTypeOptions.map((t) => (
                   <Card
                     key={t.id}
                     onClick={() => {
